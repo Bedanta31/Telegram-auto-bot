@@ -35,7 +35,7 @@ async def run_client(name, client):
                     print(f"{name} Sent: {cmd}")
                     await asyncio.sleep(random.randint(1,2))  # safer delay
 
-                wait_time = random.randint(116,126)  # safer gap
+                wait_time = random.randint(123,130)  # safer gap
                 print(f"{name} waiting {wait_time} sec\n")
                 await asyncio.sleep(wait_time)
 
