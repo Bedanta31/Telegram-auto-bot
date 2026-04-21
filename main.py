@@ -33,7 +33,7 @@ async def run_client(name, client):
                 for cmd in commands:
                     await client.send_message("YamatoAcn_bot", cmd)
                     print(f"{name} Sent: {cmd}")
-                    await asyncio.sleep(random.randint(2,3))  # safer delay
+                    await asyncio.sleep(random.randint(1,2))  # safer delay
 
                 wait_time = random.randint(116,126)  # safer gap
                 print(f"{name} waiting {wait_time} sec\n")
