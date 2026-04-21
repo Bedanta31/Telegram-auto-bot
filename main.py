@@ -8,40 +8,48 @@ api_hash = os.getenv("API_HASH")
 
 commands = ["/lever", "/dice", "/bowling", "/explore"]
 
+# 🔥 3 clients (3 session files)
 clients = [
-    TelegramClient("session1", api_id, api_hash),
-    TelegramClient("session2", api_id, api_hash),
-    TelegramClient("session3", api_id, api_hash)
+    ("Acc1", TelegramClient("session1", api_id, api_hash,
+                            connection_retries=999, retry_delay=5, auto_reconnect=True)),
+    ("Acc2", TelegramClient("session2", api_id, api_hash,
+                            connection_retries=999, retry_delay=5, auto_reconnect=True)),
+    ("Acc3", TelegramClient("session3", api_id, api_hash,
+                            connection_retries=999, retry_delay=5, auto_reconnect=True)),
 ]
 
-async def run_client(client, name):
-    await client.connect()
+async def run_client(name, client):
+    try:
+        await client.start()  # 🔥 better than connect()
 
-    if not await client.is_user_authorized():
-        print(f"❌ {name} session invalid")
-        return
+        if not await client.is_user_authorized():
+            print(f"❌ {name} session invalid (upload correct session file)")
+            return
 
-    print(f"✅ {name} connected")
+        print(f"✅ {name} connected")
 
-    while True:
-        try:
-            for cmd in commands:
-                await client.send_message("YamatoAcn_bot", cmd)
-                print(f"{name} Sent: {cmd}")
-                await asyncio.sleep(random.randint(3,6))
+        while True:
+            try:
+                for cmd in commands:
+                    await client.send_message("YamatoAcn_bot", cmd)
+                    print(f"{name} Sent: {cmd}")
+                    await asyncio.sleep(random.randint(4,7))  # safer delay
 
-            wait_time = random.randint(110,140)
-            print(f"{name} waiting {wait_time} sec\n")
-            await asyncio.sleep(wait_time)
+                wait_time = random.randint(120,160)  # safer gap
+                print(f"{name} waiting {wait_time} sec\n")
+                await asyncio.sleep(wait_time)
 
-        except Exception as e:
-            print(f"{name} Error:", e)
-            await asyncio.sleep(5)
+            except Exception as e:
+                print(f"⚠️ {name} Error:", e)
+                await asyncio.sleep(10)
+
+    except Exception as e:
+        print(f"❌ {name} startup error:", e)
 
 async def main():
     tasks = []
-    for i, client in enumerate(clients):
-        tasks.append(run_client(client, f"Acc{i+1}"))
+    for name, client in clients:
+        tasks.append(run_client(name, client))
 
     await asyncio.gather(*tasks)
 
